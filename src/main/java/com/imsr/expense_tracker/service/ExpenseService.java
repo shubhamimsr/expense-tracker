@@ -21,12 +21,10 @@ public class ExpenseService {
     @Transactional
     public Expense addExpense(Expense expense) {
 
-        // 🔥 1. Attach paidBy Friend entity properly
         Friend payer = friendRepository.findById(expense.getPaidBy().getId())
                 .orElseThrow(() -> new RuntimeException("Payer not found"));
         expense.setPaidBy(payer);
 
-        // 🔥 2. Attach participants list properly
         List<Friend> attachedParticipants = expense.getParticipants().stream()
                 .map(p -> friendRepository.findById(p.getId())
                         .orElseThrow(() -> new RuntimeException("Friend not found: " + p.getId())))
@@ -34,7 +32,6 @@ public class ExpenseService {
 
         expense.setParticipants(attachedParticipants);
 
-        // 🔥 3. Save final expense
         return expenseRepository.save(expense);
     }
 
